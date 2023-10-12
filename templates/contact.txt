@@ -1,0 +1,50 @@
+ var cagbIcon = L.icon({
+            iconUrl: '{% static "img/cagb-marker-icon.png" %}',  
+            iconSize: [32,32],  
+        });
+
+       
+
+        var cagbdatasets = new L.GeoJSON.AJAX("{% url 'cagb' %}", {
+                pointToLayer: function (feature, latlng) {
+                return L.marker(latlng, { icon: cagbIcon });  // Use cagb custom marker icon
+            },
+                onEachFeature: function (feature, layer) {
+                    layer.bindPopup(feature.properties.name.toString());
+            }
+        }).addTo(map);
+
+
+
+Next, make sure you have a Contact model defined in your models.py file. The model will represent the data that you want to save to the database:
+python
+Copy code
+# models.py
+from django.db import models
+
+class Contact(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    desc = models.TextField()
+
+    def __str__(self):
+        return self.name
+Ensure that you have properly configured your URL patterns in the urls.py file to map the view to the correct URL:
+python
+Copy code
+# urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('contact/', views.contact_view, name='contact'),
+    # Other URL patterns...
+]
+With these changes, when the form is submitted, the data will be processed by the contact_view view, and the contact information will be saved to the database using the Contact model. You can customize the view and model according to your specific requirements.
+
+Remember to run python manage.py makemigrations and python manage.py migrate to create the necessary database tables for the Contact model.
+
+
+
+
